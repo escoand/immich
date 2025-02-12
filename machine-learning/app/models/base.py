@@ -158,4 +158,9 @@ class InferenceModel(ABC):
 
     @property
     def _model_format_default(self) -> ModelFormat:
-        return ModelFormat.ARMNN if ann.ann.is_available and settings.ann else ModelFormat.ONNX
+        if rknn.is_available():
+            return ModelFormat.RKNN
+        elif ann.ann.is_available:
+            return ModelFormat.ARMNN
+        else:
+            return ModelFormat.ONNX
