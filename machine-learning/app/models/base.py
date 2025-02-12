@@ -13,7 +13,7 @@ from app.sessions.ort import OrtSession
 from ..config import clean_name, log, settings
 from ..schemas import ModelFormat, ModelIdentity, ModelSession, ModelTask, ModelType
 from ..sessions.ann import AnnSession
-from ..sessions.rknn import RknnSession
+import ..sessions.rknn
 
 
 class InferenceModel(ABC):
@@ -110,7 +110,7 @@ class InferenceModel(ABC):
             case ".onnx":
                 session = OrtSession(model_path)
             case ".rknn":
-                session: ModelSession = RknnSession(model_path)
+                session: ModelSession = rknn.RknnSession(model_path)
             case _:
                 raise ValueError(f"Unsupported model file type: {model_path.suffix}")
         return session
