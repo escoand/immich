@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import platform
 from pathlib import Path
 from typing import Any, NamedTuple
 
@@ -11,6 +12,34 @@ from app.schemas import SessionNode
 
 from ..config import log, settings
 
+
+DEVICE_COMPATIBLE_NODES = [
+    '/proc/device-tree/compatible',
+    '/device-tree/compatible',
+]
+
+def is_available() -> bool:
+    system = platform.system()
+    machine = platform.machine()
+    os_machine = system + '-' + machine
+    if os_machine != 'Linux-aarch64':
+        return False
+    for p in DEVICE_COMPATIBLE_NODES:
+        path = Path(p)
+        if not path.exists():
+            continue
+        with p.open() as f:
+            device_compatible_str = f.read()
+            if 'rk3562' in device_compatible_str:
+                host = 'RK3562'
+            elif 'rk3576' in device_compatible_str:
+                host = 'RK3576'
+            elif 'rk3588' in device_compatible_str:
+                host = 'RK3588'
+            else:
+                host = 'RK3566_RK3568'
+                return True
+    return False
 
 class RknnSession:
     """
